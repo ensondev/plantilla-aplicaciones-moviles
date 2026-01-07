@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' data: gap: http://localhost:5555 https://appsmoviles.grupofmo.com:5555 https://appsmoviles.grupofmo.com https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline';
+                 connect-src 'self' http://localhost:5555 https://appsmoviles.grupofmo.com:5555 https://appsmoviles.grupofmo.com;
+                 img-src 'self' data:;
+                 style-src 'self' 'unsafe-inline';
+                 script-src 'self' 'unsafe-inline' 'unsafe-eval';">
+    <title>Sistema de Biblioteca - Frontend</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .api-config {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .api-config input {
+            padding: 8px;
+            flex: 1;
+            min-width: 200px;
+            border: none;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+
+        .api-config button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            background: #3498db;
+            color: white;
+            font-weight: bold;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+
+        .api-config button:hover {
+            background: #2980b9;
+        }
+
+        .message {
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 3px;
+            background: #e8f4f8;
+            color: #2c3e50;
+            border-left: 4px solid #3498db;
+        }
+
+        .message.error {
+            background: #f8e8e8;
+            color: #c0392b;
+            border-color: #e74c3c;
+        }
+
+        .message.success {
+            background: #e8f8e8;
+            color: #27ae60;
+            border-color: #27ae60;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tabs button {
+            padding: 10px 15px;
+            border: none;
+            background: #34495e;
+            color: white;
+            cursor: pointer;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 14px;
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .tabs button.active {
+            background: #3498db;
+        }
+
+        .tabs button:hover {
+            background: #2980b9;
+        }
+
+        .section {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 3px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .button-group button {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #229954;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        table thead {
+            background: #34495e;
+            color: white;
+        }
+
+        table th,
+        table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #bdc3c7;
+        }
+
+        table tbody tr:hover {
+            background: #ecf0f1;
+        }
+
+        .actions {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .actions button {
+            padding: 5px 8px;
+            font-size: 12px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            min-width: 60px;
+        }
+
+        .btn-edit {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .loading {
+            display: inline-block;
+            opacity: 0.6;
+        }
+
+        /* Media Queries para Responsividad */
+        @media (max-width: 768px) {
+            body {
+                padding: 8px;
+            }
+
+            header {
+                padding: 12px;
+                margin-bottom: 15px;
+            }
+
+            header h1 {
+                font-size: 20px;
+                margin-bottom: 10px;
+            }
+
+            .api-config {
+                padding: 8px;
+                gap: 6px;
+            }
+
+            .api-config input {
+                min-width: 150px;
+                padding: 6px;
+                font-size: 13px;
+            }
+
+            .api-config button {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .tabs {
+                gap: 5px;
+                margin-bottom: 15px;
+            }
+
+            .tabs button {
+                padding: 8px 10px;
+                font-size: 12px;
+                min-width: 80px;
+            }
+
+            .section {
+                padding: 15px;
+            }
+
+            .form-group {
+                margin-bottom: 12px;
+            }
+
+            .form-group label {
+                font-size: 14px;
+                margin-bottom: 4px;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .form-group textarea {
+                min-height: 70px;
+            }
+
+            .button-group {
+                gap: 8px;
+                margin-top: 15px;
+            }
+
+            .button-group button {
+                min-width: 100px;
+                padding: 8px;
+                font-size: 13px;
+            }
+
+            table {
+                font-size: 12px;
+                margin-top: 15px;
+            }
+
+            table th,
+            table td {
+                padding: 8px;
+            }
+
+            .actions button {
+                padding: 4px 6px;
+                font-size: 11px;
+                min-width: 50px;
+            }
+
+            .message {
+                font-size: 13px;
+                padding: 8px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 6px;
+            }
+
+            header {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            header h1 {
+                font-size: 18px;
+            }
+
+            .api-config {
+                padding: 6px;
+                gap: 4px;
+                flex-direction: column;
+            }
+
+            .api-config input {
+                width: 100%;
+                min-width: unset;
+                font-size: 13px;
+            }
+
+            .api-config button {
+                width: 100%;
+                padding: 8px;
+                font-size: 12px;
+            }
+
+            .tabs {
+                gap: 4px;
+                margin-bottom: 12px;
+            }
+
+            .tabs button {
+                padding: 6px 8px;
+                font-size: 11px;
+                flex: 1;
+                min-width: unset;
+            }
+
+            .section {
+                padding: 12px;
+                border-radius: 4px;
+            }
+
+            h2 {
+                font-size: 18px;
+                margin-bottom: 15px;
+            }
+
+            .form-group {
+                margin-bottom: 10px;
+            }
+
+            .form-group label {
+                font-size: 13px;
+                margin-bottom: 3px;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                padding: 7px;
+                font-size: 13px;
+            }
+
+            .form-group textarea {
+                min-height: 60px;
+            }
+
+            .button-group {
+                gap: 6px;
+                margin-top: 12px;
+                flex-direction: column;
+            }
+
+            .button-group button {
+                width: 100%;
+                min-width: unset;
+                padding: 10px;
+                font-size: 13px;
+            }
+
+            table {
+                font-size: 11px;
+                margin-top: 12px;
+            }
+
+            table th,
+            table td {
+                padding: 6px;
+            }
+
+            .actions {
+                flex-direction: column;
+                gap: 3px;
+            }
+
+            .actions button {
+                width: 100%;
+                padding: 6px;
+                font-size: 11px;
+                min-width: unset;
+            }
+
+            .message {
+                font-size: 12px;
+                padding: 6px 8px;
+                margin: 8px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <header>
+            <h1>📚 Sistema de Biblioteca</h1>
+            <div class="api-config">
+                <input type="text" id="apiBaseUrl" placeholder="URL del backend (ej: http://localhost:5555)">
+                <button onclick="updateApiUrl()">Guardar URL</button>
+                <button onclick="testApi()" class="btn-primary">Probar conexión</button>
+                <div id="message" class="message" style="display:none;"></div>
+            </div>
+        </header>
+
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="active" onclick="switchTab('libros')">📖 Libros</button>
+            <button onclick="switchTab('prestamos')">🔄 Préstamos</button>
+            <button onclick="switchTab('usuarios')">👥 Usuarios</button>
+            <button onclick="switchTab('auth')">🔐 Login</button>
+        </div>
+
+        <!-- TAB: LIBROS -->
+        <div id="libros" class="section active">
+            <h2 id="tituloSeccionLibros">Lista de Libros</h2>
+            
+            <!-- SECCIÓN DE CREACIÓN - SOLO DOCENTES -->
+            <div id="seccionCrearLibro" style="display: none;">
+                <div class="form-group">
+                    <label>Título *</label>
+                    <input type="text" id="libro_titulo" placeholder="Ingrese el título del libro">
+                </div>
+
+                <div class="form-group">
+                    <label>Autor *</label>
+                    <input type="text" id="libro_autor" placeholder="Ingrese el autor del libro">
+                </div>
+
+                <div class="form-group">
+                    <label>Editorial</label>
+                    <input type="text" id="libro_editorial" placeholder="Ingrese la editorial">
+                </div>
+
+                <div class="form-group">
+                    <label>Año de publicación</label>
+                    <input type="number" id="libro_anio" placeholder="Ej: 2024">
+                </div>
+
+                <div class="form-group">
+                    <label>Disponible</label>
+                    <select id="libro_disponible">
+                        <option value="1">Sí</option>
+                        <option value="0">No</option>
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="crearLibro()">➕ Crear Libro</button>
+                    <button class="btn-secondary" onclick="cargarLibros()">🔄 Recargar</button>
+                </div>
+            </div>
+
+            <!-- BOTÓN RECARGAR PARA NO DOCENTES -->
+            <div id="seccionRecargarLibro">
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="cargarLibros()">🔄 Recargar</button>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 30px;" id="subtituloListaLibros">Catálogo de Libros</h3>
+            <table id="librosTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Autor</th>
+                        <th>Editorial</th>
+                        <th>Año</th>
+                        <th>Disponible</th>
+                        <th id="columnAcciones">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="librosBody">
+                    <tr><td colspan="7" style="text-align:center;">Cargando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TAB: PRESTAMOS -->
+        <div id="prestamos" class="section">
+            <!-- Mensaje de autenticación para usuarios sin sesión -->
+            <div id="prestamosLoginRequerido" style="display: none; text-align: center; padding: 40px; background: #ecf0f1; border-radius: 5px;">
+                <h2>🔐 Inicia Sesión para Acceder</h2>
+                <p style="color: #7f8c8d; margin-bottom: 30px;">Debes iniciar sesión para gestionar préstamos</p>
+                
+                <div style="max-width: 400px; margin: 0 auto;">
+                    <div class="form-group">
+                        <label>Correo *</label>
+                        <input type="email" id="prestamo_login_correo" placeholder="Correo del usuario">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contraseña *</label>
+                        <input type="password" id="prestamo_login_password" placeholder="Contraseña">
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="hacerLoginDesdePrestamos()">🔐 Iniciar sesión</button>
+                    </div>
+
+                    <p style="margin-top: 20px; color: #7f8c8d;">
+                        ¿No tienes cuenta? 
+                        <a href="#" onclick="switchTab('auth'); return false;" style="color: #3498db; text-decoration: none; font-weight: bold;">
+                            Créala aquí
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Contenido de préstamos para usuarios autenticados -->
+            <div id="prestamosContenido">
+                <h2>Gestión de Préstamos</h2>
+                
+                <div class="form-group">
+                    <label>Usuario ID *</label>
+                    <input type="number" id="prestamo_usuario_id" placeholder="Ingrese ID del usuario">
+                </div>
+
+                <div class="form-group">
+                    <label>Libro ID *</label>
+                    <input type="number" id="prestamo_libro_id" placeholder="Ingrese ID del libro">
+                </div>
+
+                <div class="form-group">
+                    <label>Fecha de retorno esperado</label>
+                    <input type="date" id="prestamo_fecha_retorno">
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="crearPrestamo()">➕ Crear Préstamo</button>
+                    <button class="btn-secondary" onclick="cargarPrestamos()">🔄 Recargar</button>
+                </div>
+
+                <h3 style="margin-top: 30px;">Lista de Préstamos</h3>
+                <table id="prestamosTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Libro</th>
+                            <th>Fecha Préstamo</th>
+                            <th>Fecha Retorno</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="prestamosBody">
+                        <tr><td colspan="7" style="text-align:center;">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB: USUARIOS -->
+        <div id="usuarios" class="section">
+            <h2>Gestión de Usuarios</h2>
+            
+            <div class="form-group">
+                <label>Nombre *</label>
+                <input type="text" id="usuario_nombre" placeholder="Nombre del usuario">
+            </div>
+
+            <div class="form-group">
+                <label>Correo *</label>
+                <input type="email" id="usuario_correo" placeholder="Correo del usuario">
+            </div>
+
+            <div class="form-group">
+                <label>Contraseña *</label>
+                <input type="password" id="usuario_password" placeholder="Contraseña">
+            </div>
+
+            <div class="form-group">
+                <label>Tipo de usuario *</label>
+                <select id="usuario_tipo">
+                    <option value="estudiante">Estudiante</option>
+                    <option value="docente">Docente</option>
+                </select>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="crearUsuario()">➕ Registrar Usuario</button>
+                <button class="btn-secondary" onclick="cargarUsuarios()">🔄 Recargar</button>
+            </div>
+
+            <h3 style="margin-top: 30px;">Lista de Usuarios</h3>
+            <table id="usuariosTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Tipo</th>
+                        <th>Activo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="usuariosBody">
+                    <tr><td colspan="6" style="text-align:center;">Cargando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TAB: AUTH -->
+        <div id="auth" class="section">
+            <h2>Autenticación</h2>
+            
+            <div class="form-group">
+                <label>Correo *</label>
+                <input type="email" id="login_correo" placeholder="Correo del usuario">
+            </div>
+
+            <div class="form-group">
+                <label>Contraseña *</label>
+                <input type="password" id="login_password" placeholder="Contraseña">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="hacerLogin()">🔐 Iniciar sesión</button>
+                <button class="btn-secondary" onclick="cerrarSesion()">🚪 Cerrar sesión</button>
+            </div>
+
+            <hr style="margin: 40px 0; border: none; border-top: 2px solid #bdc3c7;">
+
+            <h2>Crear Cuenta Nueva</h2>
+            <p style="color: #7f8c8d; margin-bottom: 20px;">Regístrate como estudiante</p>
+            
+            <div class="form-group">
+                <label>Nombre completo *</label>
+                <input type="text" id="registro_nombre" placeholder="Ingrese su nombre completo">
+            </div>
+
+            <div class="form-group">
+                <label>Correo *</label>
+                <input type="email" id="registro_correo" placeholder="Ingrese su correo electrónico">
+            </div>
+
+            <div class="form-group">
+                <label>Contraseña *</label>
+                <input type="password" id="registro_password" placeholder="Ingrese una contraseña">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="registrarCuenta()">✅ Crear Cuenta</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script>
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedUrl = localStorage.getItem('apiBaseUrl');
+            if (savedUrl) {
+                document.getElementById('apiBaseUrl').value = savedUrl;
+            } else {
+                document.getElementById('apiBaseUrl').value = API_CONFIG.BASE_URL;
+            }
+            actualizarPermisosLibros();
+            cargarLibros();
+        });
+
+        // Actualizar permisos según el rol del usuario
+        function actualizarPermisosLibros() {
+            const userType = localStorage.getItem('userType');
+            const seccionCrear = document.getElementById('seccionCrearLibro');
+            const seccionRecargar = document.getElementById('seccionRecargarLibro');
+            const tituloSeccion = document.getElementById('tituloSeccionLibros');
+            const columnAcciones = document.getElementById('columnAcciones');
+
+            if (userType === 'docente') {
+                seccionCrear.style.display = 'block';
+                seccionRecargar.style.display = 'none';
+                tituloSeccion.textContent = 'Gestión de Libros';
+                columnAcciones.style.display = 'table-cell';
+            } else {
+                seccionCrear.style.display = 'none';
+                seccionRecargar.style.display = 'block';
+                tituloSeccion.textContent = 'Catálogo de Libros';
+                columnAcciones.style.display = 'none';
+            }
+            
+            // Recargar libros para actualizar las acciones
+            cargarLibros();
+        }
+
+        // Cambiar entre tabs
+        function switchTab(tabName) {
+            const tieneToken = !!localStorage.getItem('token');
+            const userType = localStorage.getItem('userType');
+
+            // Proteger acceso a Préstamos sin sesión
+            if (tabName === 'prestamos') {
+                mostrarSeccionPrestamos(tieneToken);
+            }
+
+            // Proteger acceso a Usuarios solo para Docentes
+            if (tabName === 'usuarios' && userType !== 'docente') {
+                showMessage('Solo los docentes pueden acceder a esta sección', 'error');
+                return;
+            }
+
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Mostrar u ocultar secciones de préstamos según autenticación
+        function mostrarSeccionPrestamos(tieneToken) {
+            const loginRequerido = document.getElementById('prestamosLoginRequerido');
+            const contenido = document.getElementById('prestamosContenido');
+
+            if (tieneToken) {
+                loginRequerido.style.display = 'none';
+                contenido.style.display = 'block';
+            } else {
+                loginRequerido.style.display = 'block';
+                contenido.style.display = 'none';
+            }
+        }
+
+        // Mostrar mensaje
+        function showMessage(text, type = 'info') {
+            const msgEl = document.getElementById('message');
+            msgEl.textContent = text;
+            msgEl.className = 'message ' + type;
+            msgEl.style.display = 'block';
+            
+            // Ocultar automáticamente después de 4 segundos
+            setTimeout(() => {
+                msgEl.style.display = 'none';
+            }, 4000);
+        }
+
+        // Actualizar URL del API
+        function updateApiUrl() {
+            const url = document.getElementById('apiBaseUrl').value;
+            if (!url) {
+                showMessage('Por favor ingrese una URL', 'error');
+                return;
+            }
+            setApiBaseUrl(url);
+            showMessage('URL actualizada: ' + getApiBaseUrl(), 'success');
+        }
+
+        // Probar conexión
+        async function testApi() {
+            try {
+                const result = await testConnection();
+                if (result.success) {
+                    showMessage('✅ Conexión exitosa con el backend', 'success');
+                } else {
+                    showMessage('❌ ' + result.message, 'error');
+                }
+            } catch (error) {
+                showMessage('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        // ==================== LIBROS ====================
+        async function cargarLibros() {
+            try {
+                const libros = await apiGet('libros');
+                const tbody = document.getElementById('librosBody');
+                const userType = localStorage.getItem('userType');
+                
+                if (!Array.isArray(libros) || libros.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay libros registrados</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = libros.map(l => `
+                    <tr>
+                        <td>${l.id_libro}</td>
+                        <td>${l.titulo}</td>
+                        <td>${l.autor}</td>
+                        <td>${l.editorial || '-'}</td>
+                        <td>${l.anio_publicacion || '-'}</td>
+                        <td>${l.disponible ? '✅' : '❌'}</td>
+                        ${userType === 'docente' ? `
+                        <td class="actions">
+                            <button class="btn-edit" onclick="editarLibro(${l.id_libro})">Editar</button>
+                            <button class="btn-delete" onclick="eliminarLibro(${l.id_libro})">Eliminar</button>
+                        </td>
+                        ` : ''}
+                    </tr>
+                `).join('');
+            } catch (error) {
+                showMessage('Error al cargar libros: ' + error.message, 'error');
+                document.getElementById('librosBody').innerHTML = '<tr><td colspan="7" style="text-align:center;">Error al cargar</td></tr>';
+            }
+        }
+
+        async function crearLibro() {
+            const tieneToken = !!localStorage.getItem('token');
+            
+            if (!tieneToken) {
+                showMessage('Debes iniciar sesión para crear un libro', 'error');
+                return;
+            }
+
+            const libro = {
+                titulo: document.getElementById('libro_titulo').value,
+                autor: document.getElementById('libro_autor').value,
+                editorial: document.getElementById('libro_editorial').value,
+                anio_publicacion: document.getElementById('libro_anio').value || null,
+                disponible: document.getElementById('libro_disponible').value === '1'
+            };
+
+            if (!libro.titulo || !libro.autor) {
+                showMessage('Título y autor son obligatorios', 'error');
+                return;
+            }
+
+            try {
+                await apiPost('libros', libro);
+                showMessage('✅ Libro creado exitosamente', 'success');
+                document.getElementById('libro_titulo').value = '';
+                document.getElementById('libro_autor').value = '';
+                document.getElementById('libro_editorial').value = '';
+                document.getElementById('libro_anio').value = '';
+                cargarLibros();
+            } catch (error) {
+                showMessage('Error: ' + (error.message || 'No se pudo crear el libro'), 'error');
+            }
+        }
+
+        async function eliminarLibro(id) {
+            if (!confirm('¿Está seguro de que desea eliminar este libro?')) return;
+            try {
+                await apiDelete('libros/' + id);
+                showMessage('✅ Libro eliminado', 'success');
+                cargarLibros();
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error');
+            }
+        }
+
+        function editarLibro(id) {
+            showMessage('Funcionalidad de editar en desarrollo', 'info');
+        }
+
+        // ==================== PRESTAMOS ====================
+        async function cargarPrestamos() {
+            try {
+                const prestamos = await apiGet('prestamos');
+                const tbody = document.getElementById('prestamosBody');
+                
+                if (!Array.isArray(prestamos) || prestamos.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay préstamos registrados</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = prestamos.map(p => `
+                    <tr>
+                        <td>${p.id_prestamo}</td>
+                        <td>${p.id_usuario}</td>
+                        <td>${p.id_libro}</td>
+                        <td>${new Date(p.fecha_prestamo).toLocaleDateString()}</td>
+                        <td>${p.fecha_retorno ? new Date(p.fecha_retorno).toLocaleDateString() : '-'}</td>
+                        <td>${p.estado || 'Activo'}</td>
+                        <td class="actions">
+                            <button class="btn-delete" onclick="devolverPrestamo(${p.id_prestamo})">Devolver</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                showMessage('Error al cargar préstamos: ' + error.message, 'error');
+                document.getElementById('prestamosBody').innerHTML = '<tr><td colspan="7" style="text-align:center;">Error al cargar</td></tr>';
+            }
+        }
+
+        async function crearPrestamo() {
+            const prestamo = {
+                id_usuario: document.getElementById('prestamo_usuario_id').value,
+                id_libro: document.getElementById('prestamo_libro_id').value,
+                fecha_retorno_esperada: document.getElementById('prestamo_fecha_retorno').value
+            };
+
+            if (!prestamo.id_usuario || !prestamo.id_libro) {
+                showMessage('Usuario y Libro son obligatorios', 'error');
+                return;
+            }
+
+            try {
+                await apiPost('prestamos', prestamo);
+                showMessage('✅ Préstamo creado exitosamente', 'success');
+                document.getElementById('prestamo_usuario_id').value = '';
+                document.getElementById('prestamo_libro_id').value = '';
+                document.getElementById('prestamo_fecha_retorno').value = '';
+                cargarPrestamos();
+            } catch (error) {
+                showMessage('Error: ' + (error.message || 'No se pudo crear el préstamo'), 'error');
+            }
+        }
+
+        function devolverPrestamo(id) {
+            showMessage('Funcionalidad en desarrollo', 'info');
+        }
+
+        // ==================== USUARIOS ====================
+        async function cargarUsuarios() {
+            try {
+                const usuarios = await apiGet('usuarios');
+                const tbody = document.getElementById('usuariosBody');
+                
+                if (!Array.isArray(usuarios) || usuarios.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay usuarios registrados</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = usuarios.map(u => `
+                    <tr>
+                        <td>${u.id_usuario}</td>
+                        <td>${u.nombre}</td>
+                        <td>${u.correo}</td>
+                        <td>${u.tipo}</td>
+                        <td>${u.activo ? '✅' : '❌'}</td>
+                        <td class="actions">
+                            <button class="btn-delete" onclick="desactivarUsuario(${u.id_usuario})">Desactivar</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                showMessage('Error al cargar usuarios: ' + error.message, 'error');
+                document.getElementById('usuariosBody').innerHTML = '<tr><td colspan="6" style="text-align:center;">Error al cargar</td></tr>';
+            }
+        }
+
+        async function crearUsuario() {
+            const usuario = {
+                nombre: document.getElementById('usuario_nombre').value,
+                correo: document.getElementById('usuario_correo').value,
+                password: document.getElementById('usuario_password').value,
+                tipo: document.getElementById('usuario_tipo').value
+            };
+
+            if (!usuario.nombre || !usuario.correo || !usuario.password) {
+                showMessage('Nombre, correo y contraseña son obligatorios', 'error');
+                return;
+            }
+
+            try {
+                await apiPost('usuarios', usuario);
+                showMessage('✅ Usuario registrado exitosamente', 'success');
+                document.getElementById('usuario_nombre').value = '';
+                document.getElementById('usuario_correo').value = '';
+                document.getElementById('usuario_password').value = '';
+                cargarUsuarios();
+            } catch (error) {
+                showMessage('Error: ' + (error.message || 'No se pudo registrar el usuario'), 'error');
+            }
+        }
+
+        function desactivarUsuario(id) {
+            showMessage('Funcionalidad en desarrollo', 'info');
+        }
+
+        // ==================== AUTENTICACIÓN ====================
+        async function hacerLoginDesdePrestamos() {
+            const correo = document.getElementById('prestamo_login_correo').value;
+            const password = document.getElementById('prestamo_login_password').value;
+
+            if (!correo || !password) {
+                showMessage('Correo y contraseña son obligatorios', 'error');
+                return;
+            }
+
+            try {
+                const response = await apiPost('auth/login', { correo, password });
+                localStorage.setItem('token', response.token);
+                localStorage.setItem('userType', response.usuario.tipo);
+                showMessage('✅ Sesión iniciada correctamente', 'success');
+                actualizarPermisosLibros();
+                
+                // Mostrar contenido de préstamos
+                mostrarSeccionPrestamos(true);
+                cargarPrestamos();
+            } catch (error) {
+                showMessage('❌ Error de autenticación: ' + (error.message || 'Credenciales inválidas'), 'error');
+            }
+        }
+
+        async function registrarCuenta() {
+            const nombre = document.getElementById('registro_nombre').value;
+            const correo = document.getElementById('registro_correo').value;
+            const password = document.getElementById('registro_password').value;
+
+            if (!nombre || !correo || !password) {
+                showMessage('Todos los campos son obligatorios', 'error');
+                return;
+            }
+
+            try {
+                await apiPost('usuarios', {
+                    nombre,
+                    correo,
+                    password,
+                    tipo: 'estudiante' // Siempre será estudiante
+                });
+                showMessage('✅ Cuenta creada exitosamente. Ahora puedes iniciar sesión', 'success');
+                // Limpiar campos
+                document.getElementById('registro_nombre').value = '';
+                document.getElementById('registro_correo').value = '';
+                document.getElementById('registro_password').value = '';
+            } catch (error) {
+                showMessage('Error: ' + (error.message || 'No se pudo crear la cuenta'), 'error');
+            }
+        }
+
+        async function hacerLogin() {
+            const correo = document.getElementById('login_correo').value;
+            const password = document.getElementById('login_password').value;
+
+            if (!correo || !password) {
+                showMessage('Correo y contraseña son obligatorios', 'error');
+                return;
+            }
+
+            try {
+                const response = await apiPost('auth/login', { correo, password });
+                localStorage.setItem('token', response.token);
+                localStorage.setItem('userType', response.usuario.tipo);
+                showMessage('✅ Sesión iniciada correctamente', 'success');
+                // mostrarTokenInfo(response.token); // Token ocultado por seguridad
+                actualizarPermisosLibros();
+                
+                // Ir a la sección de préstamos después de iniciar sesión
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+                document.getElementById('prestamos').classList.add('active');
+                document.querySelectorAll('.tabs button')[1].classList.add('active');
+                cargarPrestamos();
+            } catch (error) {
+                showMessage('❌ Error de autenticación: ' + (error.message || 'Credenciales inválidas'), 'error');
+            }
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userType');
+            document.getElementById('tokenInfo').style.display = 'none';
+            actualizarPermisosLibros();
+            showMessage('✅ Sesión cerrada', 'success');
+        }
+
+        function mostrarTokenInfo(token) {
+            document.getElementById('tokenDisplay').textContent = token;
+            document.getElementById('tokenInfo').style.display = 'block';
+        }
+
+        // Verificar si hay token al cargar
+        // if (localStorage.getItem('token')) {
+        //     mostrarTokenInfo(localStorage.getItem('token'));
+        // }
+    </script>
+</body>
+</html>
